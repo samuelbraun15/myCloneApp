@@ -1,4 +1,6 @@
 import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
+
 import { useVideoPlayer, VideoView } from 'expo-video';
 import {
   StyleSheet,
@@ -87,7 +89,10 @@ const App = () => {
           style={styles.playerBackground}
           resizeMode="cover"
         >
+
+          
           <View style={styles.playerOverlay}>
+
             {/* Header */}
             <View style={styles.playerHeader}>
               <TouchableOpacity style={styles.headerButton}>
@@ -189,6 +194,7 @@ const App = () => {
 
             {/* Lyrics Section */}
            <ScrollView style={styles.lyricContainer}>
+   
             <View style={styles.lyricsSection}>
               <View style={styles.lyricsHeader}>
                 
@@ -320,7 +326,9 @@ const styles = StyleSheet.create({
   top: 0,
   left: 0,
   zIndex: 1000,
+  
   },
+
   playerOverlay: {
     flex: 1,
     backgroundColor: COLORS.overlay,
@@ -685,6 +693,13 @@ const styles = StyleSheet.create({
   width: 28,
   height: 28,
   tintColor: COLORS.textPrimary, // Makes the PNG white to match other icons
+},
+gradientOverlay: {
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: '60%',
 },
 });
 
