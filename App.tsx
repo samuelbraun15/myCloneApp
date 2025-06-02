@@ -219,7 +219,7 @@ const App = () => {
           She said, "Take your time, what's the rush?"
           </Text>
 
-          <Text style={styles.lyricsLine}>
+          <Text style={styles.lyricsLine2}>
           I said, "Baby I'm a dog, I'm a mutt."
           </Text>
           
@@ -250,7 +250,7 @@ const App = () => {
               <Text style={styles.iconText}>⊕</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <Text style={styles.iconText}>||</Text>
+              <Text style={styles.iconText}>||</Text> 
             </TouchableOpacity>
           </View>
         </View>
@@ -548,6 +548,13 @@ const styles = StyleSheet.create({
   paddingTop: 8,
   },
     lyricsLine: {
+    color: COLORS.textPrimary,
+    fontSize: 18,
+    lineHeight: 26,
+    marginBottom: 12,
+    fontWeight: '600',
+  },
+      lyricsLine2: {
     color: COLORS.textPrimary,
     fontSize: 18,
     lineHeight: 26,
