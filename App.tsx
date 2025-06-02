@@ -1,13 +1,18 @@
 import React from 'react';
 import {
   StyleSheet,
+  Image,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
   Alert,
   StatusBar,
+  ImageBackground,
+  Dimensions,
 } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 // Color Palette (approximations from Spotify's dark theme)
 const COLORS = {
@@ -18,11 +23,16 @@ const COLORS = {
   textSecondary: '#B3B3B3', // Light grey
   accent: '#1DB954', // Spotify green
   border: '#535353', // For button borders etc.
+  overlay: 'rgba(0, 0, 0, 0.5)', // For background overlay
 };
 
 const App = () => {
   const handleFollowPress = () => {
     Alert.alert('Assignment 1 Completed');
+  };
+
+  const handlePlayPress = () => {
+    Alert.alert('Play Button Pressed', 'Music player controls clicked!');
   };
 
   // Placeholder for artist data for Credits section
@@ -46,7 +56,7 @@ const App = () => {
 
   // Placeholder for Explore cards
   const exploreCards = [
-    { title: 'X songs by Leon Thomas', id: 'e1', bgColor: '#503A9A' }, // Example placeholder color
+    { title: 'X songs by Leon Thomas', id: 'e1', bgColor: '#503A9A' },
     { title: 'Similar to Leon Thomas', id: 'e2', bgColor: '#A04030' },
     { title: 'Similar to MUTT (feat. Fre...', id: 'e3', bgColor: '#30A050' },
   ];
@@ -55,6 +65,124 @@ const App = () => {
     <View style={styles.appContainer}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
       <ScrollView style={styles.scrollView}>
+        {/* Full Screen Music Player */}
+        <ImageBackground
+          source={{ uri: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=600&fit=crop' }}
+          style={styles.playerBackground}
+          resizeMode="cover"
+        >
+          <View style={styles.playerOverlay}>
+            {/* Header */}
+            <View style={styles.playerHeader}>
+              <TouchableOpacity style={styles.headerButton}>
+                <Text style={styles.headerIcon}>‹</Text>
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>"mutt leon" in Search</Text>
+              <TouchableOpacity style={styles.headerButton}>
+                <Text style={styles.headerIcon}>⋯</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Spacer to push content down */}
+            <View style={styles.playerSpacer} />
+
+            {/* Song Info */}
+            <View style={styles.songInfoContainer}>
+              <View style={styles.albumArtContainer}>
+                <ImageBackground
+                  source={{ uri: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop' }}
+                  style={styles.albumArt}
+                  resizeMode="cover"
+                >
+                  <Text style={styles.explicitBadge}>E</Text>
+                </ImageBackground>
+              </View>
+              <View style={styles.songDetails}>
+                <Text style={styles.songTitleLarge}>MUTT</Text>
+                <Text style={styles.artistNameLarge}>Leon Thomas</Text>
+              </View>
+              <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonIcon}>⊕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Progress Bar */}
+            <View style={styles.progressContainer}>
+              <View style={styles.progressBar}>
+                <View style={styles.progressFill} />
+                <View style={styles.progressThumb} />
+              </View>
+              <View style={styles.timeContainer}>
+                <Text style={styles.timeText}>0:00</Text>
+                <Text style={styles.timeText}>-3:12</Text>
+              </View>
+            </View>
+
+            {/* Music Controls */}
+            <View style={styles.controlsContainer}>
+              {/* shuffle */}
+              <TouchableOpacity style={styles.controlButton}>
+                <Image 
+                source={require('./assets/shuffle-icon.png')}
+                style={styles.iconImage}
+                />              
+              </TouchableOpacity>
+                {/* rewind */}
+              <TouchableOpacity style={styles.controlButton}>
+                <Image 
+                source={require('./assets/back.png')}
+                style={styles.iconImage}
+                />
+              </TouchableOpacity>
+              {/* play */}
+              <TouchableOpacity style={styles.playButton} onPress={handlePlayPress}>
+                <Text style={styles.playIcon}>▶</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.controlButton}>
+                <Image 
+                source={require('./assets/next.png')}
+                style={styles.iconImage}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.controlButton}>
+                <Image 
+                source={require('./assets/shuffle-icon.png')}
+                style={styles.iconImage}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Bottom Actions */}
+            <View style={styles.bottomActions}>
+              <TouchableOpacity style={styles.bottomButton}>
+                <Text style={styles.bottomIcon}>🎵</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.bottomButton}>
+                <Text style={styles.bottomIcon}>↗</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.bottomButton}>
+                <Text style={styles.bottomIcon}>☰</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Lyrics Section */}
+            <View style={styles.lyricsSection}>
+              <View style={styles.lyricsHeader}>
+                <Text style={styles.lyricsTitle}>Lyrics</Text>
+                <TouchableOpacity style={styles.lyricsButton}>
+                  <Text style={styles.lyricsIcon}>↗</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.lyricsButton}>
+                  <Text style={styles.lyricsIcon}>⛶</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.lyricsProgress} />
+            </View>
+          </View>
+        </ImageBackground>
+
+        {/* Original Content */}
         {/* Top Bar (Current Song Info) */}
         <View style={styles.topBar}>
           <View style={styles.songInfo}>
@@ -82,7 +210,6 @@ const App = () => {
             style={styles.horizontalScroll}>
             {exploreCards.map((card) => (
               <View key={card.id} style={[styles.exploreCard, {backgroundColor: card.bgColor}]}>
-                {/* Image Placeholder */}
                 <View style={styles.cardImagePlaceholder} />
                 <Text style={styles.exploreCardText}>{card.title}</Text>
               </View>
@@ -106,7 +233,6 @@ const App = () => {
               </View>
               <TouchableOpacity
                 style={styles.followButton}
-                // Make the first follow button trigger the alert for the assignment
                 onPress={index === 0 ? handleFollowPress : undefined}>
                 <Text style={styles.followButtonText}>Follow</Text>
               </TouchableOpacity>
@@ -134,16 +260,201 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  // TOP BAR STYLES
+
+  // MUSIC PLAYER STYLES
+  playerBackground: {
+    width: width,
+    height: height,
+    justifyContent: 'flex-end',
+  },
+  playerOverlay: {
+    flex: 1,
+    backgroundColor: COLORS.overlay,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  playerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerButton: {
+    padding: 10,
+  },
+  headerIcon: {
+    color: COLORS.textPrimary,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  headerTitle: {
+    color: COLORS.textPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  playerSpacer: {
+    flex: 1,
+  },
+  songInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  albumArtContainer: {
+    position: 'relative',
+  },
+  albumArt: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+  },
+  explicitBadge: {
+    backgroundColor: COLORS.textSecondary,
+    color: COLORS.background,
+    fontSize: 10,
+    fontWeight: 'bold',
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    margin: 4,
+    borderRadius: 2,
+  },
+  songDetails: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  songTitleLarge: {
+    color: COLORS.textPrimary,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  artistNameLarge: {
+    color: COLORS.textSecondary,
+    fontSize: 16,
+    marginTop: 2,
+  },
+  addButton: {
+    padding: 10,
+  },
+  addButtonIcon: {
+    color: COLORS.textPrimary,
+    fontSize: 24,
+  },
+  progressContainer: {
+    marginBottom: 30,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: COLORS.border,
+    borderRadius: 2,
+    marginBottom: 8,
+    position: 'relative',
+  },
+  progressFill: {
+    width: '5%',
+    height: '100%',
+    backgroundColor: COLORS.textPrimary,
+    borderRadius: 2,
+  },
+  progressThumb: {
+    position: 'absolute',
+    left: '5%',
+    top: -4,
+    width: 12,
+    height: 12,
+    backgroundColor: COLORS.textPrimary,
+    borderRadius: 6,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  timeText: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  controlButton: {
+    padding: 10,
+  },
+  controlIcon: {
+    color: COLORS.textPrimary,
+    fontSize: 24,
+  },
+  playButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: COLORS.textPrimary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playIcon: {
+    color: COLORS.background,
+    fontSize: 24,
+    marginLeft: 4,
+  },
+  bottomActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  bottomButton: {
+    padding: 15,
+  },
+  bottomIcon: {
+    color: COLORS.textPrimary,
+    fontSize: 20,
+  },
+  lyricsSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+  },
+  lyricsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  lyricsTitle: {
+    color: COLORS.textPrimary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  lyricsButton: {
+    marginLeft: 15,
+    padding: 5,
+  },
+  lyricsIcon: {
+    color: COLORS.textPrimary,
+    fontSize: 16,
+  },
+  lyricsProgress: {
+    height: 4,
+    backgroundColor: COLORS.border,
+    borderRadius: 2,
+    marginTop: 10,
+  },
+
+  // ORIGINAL STYLES
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: COLORS.surface, // Or a slightly different shade
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#000', // Subtle separator if needed
+    borderBottomColor: '#000',
   },
   songInfo: {
     flex: 1,
@@ -167,9 +478,8 @@ const styles = StyleSheet.create({
   },
   iconText: {
     color: COLORS.textPrimary,
-    fontSize: 20, // Adjust as needed for icon appearance
+    fontSize: 20,
   },
-  // GENERAL SECTION STYLES
   section: {
     marginTop: 20,
     paddingHorizontal: 15,
@@ -191,38 +501,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  // EXPLORE SECTION STYLES
   horizontalScroll: {
     flexDirection: 'row',
   },
   exploreCard: {
     width: 140,
-    height: 180, // Adjusted to fit image placeholder and text
+    height: 180,
     borderRadius: 8,
     marginRight: 15,
     padding: 10,
-    justifyContent: 'space-between', // To push text to bottom
+    justifyContent: 'space-between',
   },
   cardImagePlaceholder: {
     width: '100%',
-    height: 100, // Size of the image area within the card
-    backgroundColor: COLORS.surface, // Darker placeholder for image
-    borderRadius: 4, // Slightly rounded corners for image area
+    height: 100,
+    backgroundColor: COLORS.surface,
+    borderRadius: 4,
     marginBottom: 8,
   },
   exploreCardText: {
     color: COLORS.textPrimary,
     fontSize: 13,
-    fontWeight: '600', // Semi-bold
+    fontWeight: '600',
   },
-  // CREDITS SECTION STYLES
   creditItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.card, // Subtle separator
+    borderBottomColor: COLORS.card,
   },
   creditInfo: {
     flex: 1,
@@ -239,7 +547,7 @@ const styles = StyleSheet.create({
   followButton: {
     borderColor: COLORS.border,
     borderWidth: 1,
-    borderRadius: 20, // Pill shape
+    borderRadius: 20,
     paddingVertical: 6,
     paddingHorizontal: 15,
     backgroundColor: 'transparent',
@@ -250,19 +558,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  // LIVE EVENTS SECTION STYLES
   liveEventsPlaceholder: {
     height: 150,
     backgroundColor: COLORS.card,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20, // Space at the bottom of the scroll view
+    marginBottom: 20,
   },
   placeholderText: {
     color: COLORS.textSecondary,
     fontSize: 14,
-  }
+  },
+  iconImage: {
+  width: 28,
+  height: 28,
+  tintColor: COLORS.textPrimary, // Makes the PNG white to match other icons
+},
 });
 
 export default App;
