@@ -61,14 +61,15 @@ const App = () => {
     { title: 'X songs by Leon Thomas', 
       id: 'e1', 
       bgColor: '#503A9A',
-      image: require('./assets/pexels-zach-3656773explore.jpg') // Replace with your image
+      image: require('./assets/pexels-zach-3656773explore.jpg') 
 
     },
     { title: 'Similar to Leon Thomas', 
       id: 'e2', 
       bgColor: '#A04030',
       image: require('./assets/pexels-cottonbro-9419400explore.jpg') 
-    }, // Replace with your image
+    }, 
+
     { title: 'Similar to MUTT', 
       id: 'e3', 
       bgColor: '#30A050', 
@@ -171,21 +172,23 @@ const App = () => {
 
             {/* Bottom Actions */}
             <View style={styles.bottomActions}>
-              <TouchableOpacity style={styles.bottomButton}>
-                <Text style={styles.bottomIcon}>🎵</Text>
-              </TouchableOpacity>
+    
               {/* share */}
               <TouchableOpacity style={styles.bottomButton}>
-                <Text style={styles.bottomIcon}>↗</Text>
+                <Image 
+                source={require('./assets/share.png')}
+                style={styles.iconImage}
+                />
               </TouchableOpacity>
               {/* queue */}
               <TouchableOpacity style={styles.bottomButton}>
                 <Text style={styles.bottomIcon}>☰</Text>
               </TouchableOpacity>
             </View>
+      
 
             {/* Lyrics Section */}
-            
+           <ScrollView style={styles.lyricContainer}>
             <View style={styles.lyricsSection}>
               <View style={styles.lyricsHeader}>
                 
@@ -205,12 +208,22 @@ const App = () => {
           She said, "Take your time, what's the rush?"
           </Text>
 
+          <Text style={styles.lyricsLine}>
+          I said, "Baby I'm a dog, I'm a mutt."
+          </Text>
+          
+
         </View>
+      
             </View>
+              </ScrollView>
           </View>
+          
 
 
         </ImageBackground>
+                          {/* Spacer to push content down */}
+            <View style={styles.lyricSpacer} />
 
         {/* Original Content */}
         {/* Top Bar (Current Song Info) */}
@@ -300,6 +313,9 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
     justifyContent: 'flex-end',
+  top: 0,
+  left: 0,
+  zIndex: 1000,
   },
   playerOverlay: {
     flex: 1,
@@ -328,7 +344,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerSpacer: {
-    flex: 1,
+    flex: 3, // Even more space
+    minHeight: 300,
+  },
+    lyricSpacer: {
+    flex: 1, // Even more space
+    minHeight: 50,
   },
   songInfoContainer: {
     flexDirection: 'row',
@@ -440,7 +461,8 @@ const styles = StyleSheet.create({
   bottomActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 2,
+    
+    paddingVertical: 10,
    
   },
   bottomButton: {
@@ -453,10 +475,11 @@ const styles = StyleSheet.create({
   lyricsSection: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
-    padding: 20,
-    marginTop: 10,
+    padding: 40,
+    minHeight: height * 0.3, // 30% of screen height
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+
 
   },
   lyricsHeader: {
@@ -513,6 +536,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     borderRadius: 2,
     marginTop: 10,
+  },
+  lyricContainer:{
+    marginTop: 8,
+  minHeight: 120, // Make scroll area taller
   },
 
   // ORIGINAL STYLES
