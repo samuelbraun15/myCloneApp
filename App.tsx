@@ -62,7 +62,7 @@ const App = () => {
     { title: 'X songs by Leon Thomas', 
       id: 'e1', 
       bgColor: '#503A9A',
-      image: require('./assets/pexels-zach-3656773explore.jpg') 
+      image: require('./assets/dancing-gif.gif') 
 
     },
     { title: 'Similar to Leon Thomas', 
@@ -74,7 +74,7 @@ const App = () => {
     { title: 'Similar to MUTT', 
       id: 'e3', 
       bgColor: '#30A050', 
-      image: require('./assets/pexels-bigbagfilms-8512698explore.jpg') 
+      image: require('./assets/musicians.gif') 
 },
   ];
 
@@ -249,25 +249,26 @@ const App = () => {
           </View>
         </View>
 
-        {/* Explore Leon Thomas Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Explore Leon Thomas</Text>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            style={styles.horizontalScroll}>
-            {exploreCards.map((card) => (
-              <View key={card.id} style={[styles.exploreCard, {backgroundColor: card.bgColor}]}>
-                <Image 
-                  source={card.image}
-                  style={styles.cardImage}
-                  resizeMode="cover"
-                />
-                <Text style={styles.exploreCardText}>{card.title}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+{/* Explore Leon Thomas Section */}
+<View style={styles.section}>
+  <Text style={styles.sectionTitle}>Explore Leon Thomas</Text>
+  <ScrollView
+    horizontal={true}
+    showsHorizontalScrollIndicator={false}
+    style={styles.horizontalScroll}>
+    {exploreCards.map((card) => (
+      <ImageBackground
+        key={card.id}
+        source={card.image}
+        style={styles.exploreCard}
+        imageStyle={styles.cardImageBackground}
+        resizeMode="cover"
+      >
+        <Text style={styles.exploreCardText}>{card.title}</Text>
+      </ImageBackground>
+    ))}
+  </ScrollView>
+</View>
 
         {/* Credits Section */}
         <View style={styles.section}>
@@ -609,35 +610,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  horizontalScroll: {
-    flexDirection: 'row',
-  },
-  exploreCard: {
-    width: 140,
-    height: 180,
-    borderRadius: 8,
-    marginRight: 15,
-    padding: 10,
-    justifyContent: 'space-between',
-  },
-  cardImagePlaceholder: {
-    width: '100%',
-    height: 100,
-    backgroundColor: COLORS.surface,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  exploreCardText: {
-    color: COLORS.textPrimary,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-    cardImage: {
-    width: '100%',
-    height: 100,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
+ horizontalScroll: {
+  flexDirection: 'row',
+},
+exploreCard: {
+  width: 140,
+  height: 180,
+  borderRadius: 8,
+  marginRight: 15,
+  padding: 10,
+  justifyContent: 'flex-end', // Positions text at bottom
+},
+cardImageBackground: {
+  borderRadius: 8, // Matches container border radius
+},
+exploreCardText: {
+  color: COLORS.textPrimary, // or 'white' for better contrast
+  fontSize: 13,
+  fontWeight: '600',
+  textShadowColor: 'rgba(0, 0, 0, 0.75)', // Adds shadow for readability
+  textShadowOffset: {width: 1, height: 1},
+  textShadowRadius: 2,
+},
   creditItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
