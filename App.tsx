@@ -1,7 +1,6 @@
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
 
-import { useVideoPlayer, VideoView } from 'expo-video';
+
 import {
   StyleSheet,
   Image,
@@ -474,7 +473,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     
-    paddingVertical: 10,
+    paddingVertical: 5,
    
   },
   bottomButton: {
