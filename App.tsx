@@ -90,7 +90,7 @@ const App = () => {
       <ScrollView style={styles.scrollView}>
         {/* Full Screen Music Player */}
         <ImageBackground
-          source={require('./assets/mutt-2.gif')}
+          source={require('./assets/mutt.gif')}
           style={styles.playerBackground}
           resizeMode="cover"
         >
