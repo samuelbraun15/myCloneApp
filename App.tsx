@@ -83,7 +83,7 @@ const App = () => {
       <ScrollView style={styles.scrollView}>
         {/* Full Screen Music Player */}
         <ImageBackground
-          source={require('./assets/pexels-koolshooters-6621666.jpg')}
+          source={require('./assets/mutt.gif')}
           style={styles.playerBackground}
           resizeMode="cover"
         >
@@ -287,13 +287,17 @@ const App = () => {
           ))}
         </View>
 
-        {/* Live events Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Live events</Text>
-          <View style={styles.liveEventsPlaceholder}>
-            <Text style={styles.placeholderText}>Large Image/Content Area</Text>
-          </View>
-        </View>
+{/* Live events Section */}
+<View style={styles.section}>
+  <Text style={styles.sectionTitle}>Live events</Text>
+  <View style={styles.liveEventsContainer}>
+    <Image 
+      source={require('./assets/pexels-jibarofoto-3727138.jpg')}
+      style={styles.liveEventsImage}
+      resizeMode="cover"
+    />
+  </View>
+</View>
       </ScrollView>
     </View>
   );
@@ -661,14 +665,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  liveEventsPlaceholder: {
-    height: 150,
+  liveEventsContainer: {
+    height: 200,
     backgroundColor: COLORS.card,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
     marginBottom: 20,
   },
+  liveEventsImage: {
+    width: '100%',
+    height: '100%',
+  },
+  
   placeholderText: {
     color: COLORS.textSecondary,
     fontSize: 14,
