@@ -1,4 +1,5 @@
 import React from 'react';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import {
   StyleSheet,
   Image,
@@ -13,6 +14,7 @@ import {
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
+const localSource = require('./assets/mutt.mp4'); // video for background 
 
 // Color Palette (approximations from Spotify's dark theme)
 const COLORS = {
@@ -56,9 +58,22 @@ const App = () => {
 
   // Placeholder for Explore cards
   const exploreCards = [
-    { title: 'X songs by Leon Thomas', id: 'e1', bgColor: '#503A9A' },
-    { title: 'Similar to Leon Thomas', id: 'e2', bgColor: '#A04030' },
-    { title: 'Similar to MUTT (feat. Fre...', id: 'e3', bgColor: '#30A050' },
+    { title: 'X songs by Leon Thomas', 
+      id: 'e1', 
+      bgColor: '#503A9A',
+      image: require('./assets/pexels-zach-3656773explore.jpg') // Replace with your image
+
+    },
+    { title: 'Similar to Leon Thomas', 
+      id: 'e2', 
+      bgColor: '#A04030',
+      image: require('./assets/pexels-cottonbro-9419400explore.jpg') 
+    }, // Replace with your image
+    { title: 'Similar to MUTT', 
+      id: 'e3', 
+      bgColor: '#30A050', 
+      image: require('./assets/pexels-bigbagfilms-8512698explore.jpg') 
+},
   ];
 
   return (
@@ -67,7 +82,7 @@ const App = () => {
       <ScrollView style={styles.scrollView}>
         {/* Full Screen Music Player */}
         <ImageBackground
-          source={{ uri: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=600&fit=crop' }}
+          source={require('./assets/pexels-koolshooters-6621666.jpg')}
           style={styles.playerBackground}
           resizeMode="cover"
         >
@@ -90,7 +105,7 @@ const App = () => {
             <View style={styles.songInfoContainer}>
               <View style={styles.albumArtContainer}>
                 <ImageBackground
-                  source={{ uri: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop' }}
+                  source={require('./assets/pexels-koolshooters-6621666.jpg')}
                   style={styles.albumArt}
                   resizeMode="cover"
                 >
@@ -138,16 +153,17 @@ const App = () => {
               <TouchableOpacity style={styles.playButton} onPress={handlePlayPress}>
                 <Text style={styles.playIcon}>▶</Text>
               </TouchableOpacity>
-
+              {/* forward */}
               <TouchableOpacity style={styles.controlButton}>
                 <Image 
                 source={require('./assets/next.png')}
                 style={styles.iconImage}
                 />
               </TouchableOpacity>
+              {/* repeat */}
               <TouchableOpacity style={styles.controlButton}>
                 <Image 
-                source={require('./assets/shuffle-icon.png')}
+                source={require('./assets/repeat.png')}
                 style={styles.iconImage}
                 />
               </TouchableOpacity>
@@ -158,18 +174,23 @@ const App = () => {
               <TouchableOpacity style={styles.bottomButton}>
                 <Text style={styles.bottomIcon}>🎵</Text>
               </TouchableOpacity>
+              {/* share */}
               <TouchableOpacity style={styles.bottomButton}>
                 <Text style={styles.bottomIcon}>↗</Text>
               </TouchableOpacity>
+              {/* queue */}
               <TouchableOpacity style={styles.bottomButton}>
                 <Text style={styles.bottomIcon}>☰</Text>
               </TouchableOpacity>
             </View>
 
             {/* Lyrics Section */}
+            
             <View style={styles.lyricsSection}>
               <View style={styles.lyricsHeader}>
+                
                 <Text style={styles.lyricsTitle}>Lyrics</Text>
+                
                 <TouchableOpacity style={styles.lyricsButton}>
                   <Text style={styles.lyricsIcon}>↗</Text>
                 </TouchableOpacity>
@@ -178,8 +199,17 @@ const App = () => {
                 </TouchableOpacity>
               </View>
               <View style={styles.lyricsProgress} />
+                        {/* Lyrics Content */}
+        <View style={styles.lyricsContent}>
+          <Text style={styles.lyricsLine}>
+          She said, "Take your time, what's the rush?"
+          </Text>
+
+        </View>
             </View>
           </View>
+
+
         </ImageBackground>
 
         {/* Original Content */}
@@ -210,7 +240,11 @@ const App = () => {
             style={styles.horizontalScroll}>
             {exploreCards.map((card) => (
               <View key={card.id} style={[styles.exploreCard, {backgroundColor: card.bgColor}]}>
-                <View style={styles.cardImagePlaceholder} />
+                <Image 
+                  source={card.image}
+                  style={styles.cardImage}
+                  resizeMode="cover"
+                />
                 <Text style={styles.exploreCardText}>{card.title}</Text>
               </View>
             ))}
@@ -380,8 +414,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
-    paddingHorizontal: 20,
+    marginBottom: 2,
+  
   },
   controlButton: {
     padding: 10,
@@ -405,8 +439,9 @@ const styles = StyleSheet.create({
   },
   bottomActions: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    marginBottom: 2,
+   
   },
   bottomButton: {
     padding: 15,
@@ -417,12 +452,18 @@ const styles = StyleSheet.create({
   },
   lyricsSection: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+
   },
   lyricsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 16,
+
   },
   lyricsTitle: {
     color: COLORS.textPrimary,
@@ -431,12 +472,41 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   lyricsButton: {
-    marginLeft: 15,
-    padding: 5,
+    marginLeft: 16,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   lyricsIcon: {
     color: COLORS.textPrimary,
     fontSize: 16,
+    fontWeight: '500',
+  },
+  
+  lyricsContent: {
+  paddingTop: 8,
+  },
+    lyricsLine: {
+    color: COLORS.textPrimary,
+    fontSize: 18,
+    lineHeight: 26,
+    marginBottom: 12,
+    fontWeight: '400',
+  },
+  currentLyricsLine: {
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(255, 255, 255, 0.3)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 4,
+  },
+  fadedLyricsLine: {
+    color: COLORS.textSecondary,
+    opacity: 0.7,
   },
   lyricsProgress: {
     height: 4,
@@ -523,6 +593,12 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontSize: 13,
     fontWeight: '600',
+  },
+    cardImage: {
+    width: '100%',
+    height: 100,
+    borderRadius: 4,
+    marginBottom: 8,
   },
   creditItem: {
     flexDirection: 'row',
