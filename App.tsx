@@ -1,3 +1,9 @@
+// Authors: Merilyne Mbong, Samuel Braun, Anne Marie Ala 
+// Date: 2025-06-01
+// Description: React Native app that mimics a music player interface similar to Spotify.
+// Class: CPRG303B
+// Instructor: SOla Akinbode
+
 import React from 'react';
 
 
@@ -110,7 +116,7 @@ const App = () => {
             <View style={styles.songInfoContainer}>
               <View style={styles.albumArtContainer}>
                 <ImageBackground
-                  source={require('./assets/pexels-koolshooters-6621666.jpg')}
+                  source={require('./assets/mutt-2.png')}
                   style={styles.albumArt}
                   resizeMode="cover"
                 >
@@ -294,14 +300,30 @@ const App = () => {
         </View>
 
 {/* Live events Section */}
+{/* Live events Section */}
 <View style={styles.section}>
   <Text style={styles.sectionTitle}>Live events</Text>
   <View style={styles.liveEventsContainer}>
-    <Image 
+    <ImageBackground
       source={require('./assets/pexels-jibarofoto-3727138.jpg')}
       style={styles.liveEventsImage}
       resizeMode="cover"
-    />
+    >
+      {/* Dark overlay for text readability */}
+      <View style={styles.liveEventsOverlay}>
+        {/* Artist name at bottom left */}
+        <View style={styles.liveEventsContent}>
+          <Text style={styles.liveEventsArtist}>Leon Thomas</Text>
+          <Text style={styles.liveEventsDate}>Jun 12 — Sep 12</Text>
+          <Text style={styles.liveEventsCount}>5 events</Text>
+        </View>
+        
+        {/* Find tickets button at bottom right */}
+        <TouchableOpacity style={styles.findTicketsButton}>
+          <Text style={styles.findTicketsText}>Find tickets</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   </View>
 </View>
       </ScrollView>
@@ -667,17 +689,57 @@ exploreCardText: {
     textAlign: 'center',
   },
   liveEventsContainer: {
-    height: 200,
-    backgroundColor: COLORS.card,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginBottom: 20,
+  height: 200,
+  backgroundColor: COLORS.card,
+  borderRadius: 8,
+  overflow: 'hidden',
+  marginBottom: 20,
   },
   liveEventsImage: {
-    width: '100%',
-    height: '100%',
+  width: '100%',
+  height: '100%',
   },
-  
+  liveEventsOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'flex-end',
+  padding: 20,
+  },
+  liveEventsContent: {
+  flex: 1,
+  },
+  liveEventsArtist: {
+  color: 'white',
+  fontSize: 24,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  },
+  liveEventsDate: {
+  color: 'white',
+  fontSize: 14,
+  opacity: 0.9,
+  marginBottom: 2,
+  },
+  liveEventsCount: {
+  color: 'white',
+  fontSize: 14,
+  opacity: 0.9,
+  },
+  findTicketsButton: {
+  backgroundColor: 'transparent',
+  borderColor: 'white',
+  borderWidth: 1,
+  borderRadius: 20,
+  paddingHorizontal: 20,
+  paddingVertical: 8,
+  },
+  findTicketsText: {
+  color: 'white',
+  fontSize: 14,
+  fontWeight: '600',
+  },
   placeholderText: {
     color: COLORS.textSecondary,
     fontSize: 14,
