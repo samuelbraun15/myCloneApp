@@ -48,7 +48,7 @@ const App = () => {
   const creditsData = [
     {
       name: 'Leon Thomas',
-      role: 'Main Artist, Composer',
+      role: 'Main , Composer',
       id: '1',
     },
     {
