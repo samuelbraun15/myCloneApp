@@ -4,8 +4,8 @@
 // Class: CPRG303B
 // Instructor: SOla Akinbode
 
-import React from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { Audio, AVPlaybackStatus } from 'expo-av';
 
 import {
   StyleSheet,
@@ -21,84 +21,125 @@ import {
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-const localSource = require('./assets/mutt.mp4'); // video for background 
 
-// Color Palette (approximations from Spotify's dark theme)
 const COLORS = {
-  background: '#121212', // Very dark grey / black
-  surface: '#181818', // Slightly lighter for elements like top bar
-  card: '#282828', // Dark grey for cards
-  textPrimary: '#FFFFFF', // White
-  textSecondary: '#B3B3B3', // Light grey
-  accent: '#1DB954', // Spotify green
-  border: '#535353', // For button borders etc.
-  overlay: 'rgba(0, 0, 0, 0.5)', // For background overlay
+  background: '#121212',
+  surface: '#181818',
+  card: '#282828',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#B3B3B3',
+  accent: '#1DB954',
+  border: '#535353',
+  overlay: 'rgba(0, 0, 0, 0.5)',
 };
 
 const App = () => {
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // This function is called by the audio player whenever its status updates.
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (!status.isLoaded) {
+      if (status.error) {
+        console.error(`Playback Error: ${status.error}`);
+      }
+      setIsPlaying(false);
+      return;
+    }
+
+    // Update our React state with the latest status from the player.
+    setIsPlaying(status.isPlaying);
+  };
+
+  async function loadSound() {
+    console.log('Loading Sound...');
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
+      
+      const { sound } = await Audio.Sound.createAsync(
+         require('./assets/sample-3s.mp3'),
+         { isLooping: false } // We will handle replay manually.
+      );
+      
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+      setSound(sound);
+      console.log('Sound Loaded Successfully');
+    } catch (error) {
+        console.error("Error loading sound", error);
+        Alert.alert("Error", "Could not load the audio file.");
+    }
+  }
+
+  useEffect(() => {
+    loadSound();
+
+    return () => {
+      if (sound) {
+        console.log('Unloading Sound');
+        sound.unloadAsync();
+      }
+    };
+  }, []);
+
   const handleFollowPress = () => {
     Alert.alert('Assignment 1 Completed');
   };
 
-  const handlePlayPress = () => {
-    Alert.alert('Play Button Pressed', 'Music player controls clicked!');
+  // FINAL FIX: This version uses replayAsync for robust playback.
+  const handlePlayPress = async () => {
+    if (!sound) {
+      console.log('Play pressed, but sound not loaded.');
+      return;
+    }
+
+    try {
+      // Get the real-time status directly from the sound object.
+      const status = await sound.getStatusAsync();
+
+      if (status.isLoaded) {
+        if (status.isPlaying) {
+          // If it's playing, just pause it.
+          console.log('Pausing sound.');
+          await sound.pauseAsync();
+        } else {
+          // If it's paused or has finished, replay it from the start.
+          console.log('Replaying sound.');
+          await sound.replayAsync();
+        }
+      }
+    } catch (error) {
+      console.error('Error in handlePlayPress:', error);
+      Alert.alert("Error", "Could not play the audio.");
+    }
   };
 
-  // Placeholder for artist data for Credits section
+
+  // --- The rest of your component remains the same ---
   const creditsData = [
-    {
-      name: 'Leon Thomas',
-      role: 'Main Artist, Composer',
-      id: '1',
-    },
-    {
-      name: 'Freddie Gibbs',
-      role: 'Main Artist',
-      id: '2',
-    },
-    {
-      name: 'D. Phelps',
-      role: 'Composer, Producer',
-      id: '3',
-    },
+    { name: 'Leon Thomas', role: 'Main , Composer', id: '1' },
+    { name: 'Freddie Gibbs', role: 'Main Artist', id: '2' },
+    { name: 'D. Phelps', role: 'Composer, Producer', id: '3' },
   ];
 
-  // Placeholder for Explore cards
   const exploreCards = [
-    { title: 'X songs by Leon Thomas', 
-      id: 'e1', 
-      bgColor: '#503A9A',
-      image: require('./assets/dancing-gif.gif') 
-
-    },
-    { title: 'Similar to Leon Thomas', 
-      id: 'e2', 
-      bgColor: '#A04030',
-      image: require('./assets/pexels-cottonbro-9419400explore.jpg') 
-    }, 
-
-    { title: 'Similar to MUTT', 
-      id: 'e3', 
-      bgColor: '#30A050', 
-      image: require('./assets/musicians.gif') 
-},
+    { title: 'X songs by Leon Thomas', id: 'e1', bgColor: '#503A9A', image: require('./assets/dancing-gif.gif') },
+    { title: 'Similar to Leon Thomas', id: 'e2', bgColor: '#A04030', image: require('./assets/pexels-cottonbro-9419400explore.jpg') },
+    { title: 'Similar to MUTT', id: 'e3', bgColor: '#30A050', image: require('./assets/musicians.gif') },
   ];
 
   return (
     <View style={styles.appContainer}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
       <ScrollView style={styles.scrollView}>
-        {/* Full Screen Music Player */}
         <ImageBackground
           source={require('./assets/mutt.gif')}
           style={styles.playerBackground}
           resizeMode="cover"
         >
-
-          
           <View style={styles.playerOverlay}>
-
-            {/* Header */}
             <View style={styles.playerHeader}>
               <TouchableOpacity style={styles.headerButton}>
                 <Text style={styles.headerIcon}>‹</Text>
@@ -108,11 +149,7 @@ const App = () => {
                 <Text style={styles.headerIcon}>⋯</Text>
               </TouchableOpacity>
             </View>
-
-            {/* Spacer to push content down */}
             <View style={styles.playerSpacer} />
-
-            {/* Song Info */}
             <View style={styles.songInfoContainer}>
               <View style={styles.albumArtContainer}>
                 <ImageBackground
@@ -131,8 +168,6 @@ const App = () => {
                 <Text style={styles.addButtonIcon}>⊕</Text>
               </TouchableOpacity>
             </View>
-
-            {/* Progress Bar */}
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
                 <View style={styles.progressFill} />
@@ -143,106 +178,55 @@ const App = () => {
                 <Text style={styles.timeText}>-3:12</Text>
               </View>
             </View>
-
-            {/* Music Controls */}
             <View style={styles.controlsContainer}>
-              {/* shuffle */}
               <TouchableOpacity style={styles.controlButton}>
-                <Image 
-                source={require('./assets/shuffle-icon.png')}
-                style={styles.iconImage}
-                />              
+                <Image source={require('./assets/shuffle-icon.png')} style={styles.iconImage} />
               </TouchableOpacity>
-                {/* rewind */}
               <TouchableOpacity style={styles.controlButton}>
-                <Image 
-                source={require('./assets/back.png')}
-                style={styles.iconImage}
-                />
+                <Image source={require('./assets/back.png')} style={styles.iconImage} />
               </TouchableOpacity>
-              {/* play */}
               <TouchableOpacity style={styles.playButton} onPress={handlePlayPress}>
-                <Text style={styles.playIcon}>▶</Text>
+                <Text style={styles.playIcon}>{isPlaying ? '❚❚' : '▶'}</Text>
               </TouchableOpacity>
-              {/* forward */}
               <TouchableOpacity style={styles.controlButton}>
-                <Image 
-                source={require('./assets/next.png')}
-                style={styles.iconImage}
-                />
+                <Image source={require('./assets/next.png')} style={styles.iconImage} />
               </TouchableOpacity>
-              {/* repeat */}
               <TouchableOpacity style={styles.controlButton}>
-                <Image 
-                source={require('./assets/repeat.png')}
-                style={styles.iconImage}
-                />
+                <Image source={require('./assets/repeat.png')} style={styles.iconImage} />
               </TouchableOpacity>
             </View>
-
-            {/* Bottom Actions */}
             <View style={styles.bottomActions}>
-    
-              {/* share */}
               <TouchableOpacity style={styles.bottomButton}>
-                <Image 
-                source={require('./assets/share.png')}
-                style={styles.iconImage}
-                />
+                <Image source={require('./assets/share.png')} style={styles.iconImage} />
               </TouchableOpacity>
-              {/* queue */}
               <TouchableOpacity style={styles.bottomButton}>
                 <Text style={styles.bottomIcon}>☰</Text>
               </TouchableOpacity>
             </View>
-      
-
-            {/* Lyrics Section */}
-           <ScrollView style={styles.lyricContainer}>
-   
-            <View style={styles.lyricsSection}>
-              <View style={styles.lyricsHeader}>
-                
-                <Text style={styles.lyricsTitle}>Lyrics</Text>
-                
-                <TouchableOpacity style={styles.lyricsButton}>
-                  <Text style={styles.lyricsIcon}>↗</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.lyricsButton}>
-                  <Text style={styles.lyricsIcon}>⛶</Text>
-                </TouchableOpacity>
+            <ScrollView style={styles.lyricContainer}>
+              <View style={styles.lyricsSection}>
+                <View style={styles.lyricsHeader}>
+                  <Text style={styles.lyricsTitle}>Lyrics</Text>
+                  <TouchableOpacity style={styles.lyricsButton}>
+                    <Text style={styles.lyricsIcon}>↗</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.lyricsButton}>
+                    <Text style={styles.lyricsIcon}>⛶</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.lyricsProgress} />
+                <View style={styles.lyricsContent}>
+                  <Text style={styles.lyricsLine}>She said, "Take your time, what's the rush?"</Text>
+                  <Text style={styles.lyricsLine2}>I said, "Baby I'm a dog, I'm a mutt."</Text>
+                </View>
               </View>
-              <View style={styles.lyricsProgress} />
-                        {/* Lyrics Content */}
-        <View style={styles.lyricsContent}>
-          <Text style={styles.lyricsLine}>
-          She said, "Take your time, what's the rush?"
-          </Text>
-
-          <Text style={styles.lyricsLine2}>
-          I said, "Baby I'm a dog, I'm a mutt."
-          </Text>
-          
-
-        </View>
-      
-            </View>
-              </ScrollView>
+            </ScrollView>
           </View>
-          
-
-
         </ImageBackground>
-                          {/* Spacer to push content down */}
-            <View style={styles.lyricSpacer} />
-
-        {/* Original Content */}
-        {/* Top Bar (Current Song Info) */}
+        <View style={styles.lyricSpacer} />
         <View style={styles.topBar}>
           <View style={styles.songInfo}>
-            <Text style={styles.songTitle}>
-              MUTT (feat. Freddie Gibbs) [Ren...
-            </Text>
+            <Text style={styles.songTitle}>MUTT (feat. Freddie Gibbs) [Ren...]</Text>
             <Text style={styles.artistName}>Leon Thomas, Freddie Gibbs</Text>
           </View>
           <View style={styles.topBarIcons}>
@@ -250,33 +234,20 @@ const App = () => {
               <Text style={styles.iconText}>⊕</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <Text style={styles.iconText}>||</Text> 
+              <Text style={styles.iconText}>||</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-{/* Explore Leon Thomas Section */}
-<View style={styles.section}>
-  <Text style={styles.sectionTitle}>Explore Leon Thomas</Text>
-  <ScrollView
-    horizontal={true}
-    showsHorizontalScrollIndicator={false}
-    style={styles.horizontalScroll}>
-    {exploreCards.map((card) => (
-      <ImageBackground
-        key={card.id}
-        source={card.image}
-        style={styles.exploreCard}
-        imageStyle={styles.cardImageBackground}
-        resizeMode="cover"
-      >
-        <Text style={styles.exploreCardText}>{card.title}</Text>
-      </ImageBackground>
-    ))}
-  </ScrollView>
-</View>
-
-        {/* Credits Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Explore Leon Thomas</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+            {exploreCards.map((card) => (
+              <ImageBackground key={card.id} source={card.image} style={styles.exploreCard} imageStyle={styles.cardImageBackground} resizeMode="cover">
+                <Text style={styles.exploreCardText}>{card.title}</Text>
+              </ImageBackground>
+            ))}
+          </ScrollView>
+        </View>
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Credits</Text>
@@ -290,47 +261,36 @@ const App = () => {
                 <Text style={styles.creditName}>{credit.name}</Text>
                 <Text style={styles.creditRole}>{credit.role}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.followButton}
-                onPress={index === 0 ? handleFollowPress : undefined}>
+              <TouchableOpacity style={styles.followButton} onPress={index === 0 ? handleFollowPress : undefined}>
                 <Text style={styles.followButtonText}>Follow</Text>
               </TouchableOpacity>
             </View>
           ))}
         </View>
-
-{/* Live events Section */}
-{/* Live events Section */}
-<View style={styles.section}>
-  <Text style={styles.sectionTitle}>Live events</Text>
-  <View style={styles.liveEventsContainer}>
-    <ImageBackground
-      source={require('./assets/pexels-jibarofoto-3727138.jpg')}
-      style={styles.liveEventsImage}
-      resizeMode="cover"
-    >
-      {/* Dark overlay for text readability */}
-      <View style={styles.liveEventsOverlay}>
-        {/* Artist name at bottom left */}
-        <View style={styles.liveEventsContent}>
-          <Text style={styles.liveEventsArtist}>Leon Thomas</Text>
-          <Text style={styles.liveEventsDate}>Jun 12 — Sep 12</Text>
-          <Text style={styles.liveEventsCount}>5 events</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Live events</Text>
+          <View style={styles.liveEventsContainer}>
+            <ImageBackground source={require('./assets/pexels-jibarofoto-3727138.jpg')} style={styles.liveEventsImage} resizeMode="cover">
+              <View style={styles.liveEventsOverlay}>
+                <View style={styles.liveEventsContent}>
+                  <Text style={styles.liveEventsArtist}>Leon Thomas</Text>
+                  <Text style={styles.liveEventsDate}>Jun 12 — Sep 12</Text>
+                  <Text style={styles.liveEventsCount}>5 events</Text>
+                </View>
+                <TouchableOpacity style={styles.findTicketsButton}>
+                  <Text style={styles.findTicketsText}>Find tickets</Text>
+                </TouchableOpacity>
+              </View>
+            </ImageBackground>
+          </View>
         </View>
-        
-        {/* Find tickets button at bottom right */}
-        <TouchableOpacity style={styles.findTicketsButton}>
-          <Text style={styles.findTicketsText}>Find tickets</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
-  </View>
-</View>
       </ScrollView>
     </View>
   );
 };
 
+
+// --- STYLES (No changes needed here) ---
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
@@ -339,8 +299,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-
-  // MUSIC PLAYER STYLES
   playerBackground: {
     width: width,
     height: height,
@@ -348,9 +306,7 @@ const styles = StyleSheet.create({
   top: 0,
   left: 0,
   zIndex: 1000,
-  
   },
-
   playerOverlay: {
     flex: 1,
     backgroundColor: COLORS.overlay,
@@ -378,11 +334,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   playerSpacer: {
-    flex: 3, // Even more space
+    flex: 3,
     minHeight: 300,
   },
     lyricSpacer: {
-    flex: 1, // Even more space
+    flex: 1,
     minHeight: 50,
   },
   songInfoContainer: {
@@ -470,7 +426,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 2,
-  
   },
   controlButton: {
     padding: 10,
@@ -490,14 +445,12 @@ const styles = StyleSheet.create({
   playIcon: {
     color: COLORS.background,
     fontSize: 24,
-    marginLeft: 4,
+    transform: [{ translateX: 2 }],
   },
   bottomActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    
     paddingVertical: 5,
-   
   },
   bottomButton: {
     padding: 15,
@@ -510,17 +463,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     padding: 40,
-    minHeight: height * 0.3, // 30% of screen height
+    minHeight: height * 0.3,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-
-
   },
   lyricsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-
   },
   lyricsTitle: {
     color: COLORS.textPrimary,
@@ -543,7 +493,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  
   lyricsContent: {
   paddingTop: 8,
   },
@@ -580,10 +529,8 @@ const styles = StyleSheet.create({
   },
   lyricContainer:{
     marginTop: 8,
-  minHeight: 120, // Make scroll area taller
+  minHeight: 120,
   },
-
-  // ORIGINAL STYLES
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -648,16 +595,16 @@ exploreCard: {
   borderRadius: 8,
   marginRight: 15,
   padding: 10,
-  justifyContent: 'flex-end', // Positions text at bottom
+  justifyContent: 'flex-end',
 },
 cardImageBackground: {
-  borderRadius: 8, // Matches container border radius
+  borderRadius: 8,
 },
 exploreCardText: {
-  color: COLORS.textPrimary, // or 'white' for better contrast
+  color: COLORS.textPrimary,
   fontSize: 13,
   fontWeight: '600',
-  textShadowColor: 'rgba(0, 0, 0, 0.75)', // Adds shadow for readability
+  textShadowColor: 'rgba(0, 0, 0, 0.75)',
   textShadowOffset: {width: 1, height: 1},
   textShadowRadius: 2,
 },
@@ -708,7 +655,7 @@ exploreCardText: {
   },
   liveEventsOverlay: {
   flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'flex-end',
@@ -754,7 +701,7 @@ exploreCardText: {
   iconImage: {
   width: 28,
   height: 28,
-  tintColor: COLORS.textPrimary, // Makes the PNG white to match other icons
+  tintColor: COLORS.textPrimary,
 },
 gradientOverlay: {
   position: 'absolute',
